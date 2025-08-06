@@ -2,10 +2,9 @@ package
 {
    import scaleform.clik.controls.Button;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol440")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol443")]
    public dynamic class minusCLIK extends Button
    {
-       
       
       public function minusCLIK()
       {
@@ -34,3 +33,4 @@ package
       }
    }
 }
+

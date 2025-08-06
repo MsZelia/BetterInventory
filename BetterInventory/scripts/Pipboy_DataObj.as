@@ -8,7 +8,6 @@ package
       public static const NUM_PAGES:uint = 4;
       
       public static const NUM_SPECIAL:uint = 7;
-       
       
       private var _CurrentPage:uint;
       
@@ -94,7 +93,7 @@ package
       
       private var _RLegCondition:Number;
       
-      public var ConditionBoyData:Object;
+      public var ConditionBoyData:Object = new Object();
       
       private var _SPECIALList:Array;
       
@@ -146,7 +145,6 @@ package
       
       public function Pipboy_DataObj()
       {
-         this.ConditionBoyData = new Object();
          super();
          this._CurrentPage = 0;
          this._StoredTabs = new Vector.<uint>(NUM_PAGES,true);
@@ -780,3 +778,4 @@ package
       }
    }
 }
+

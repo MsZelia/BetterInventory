@@ -2,10 +2,9 @@ package Pipboy_InvPage_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol464")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol467")]
    public dynamic class Torso_Anim_7 extends MovieClip
    {
-       
       
       public function Torso_Anim_7()
       {
@@ -24,3 +23,4 @@ package Pipboy_InvPage_fla
       }
    }
 }
+

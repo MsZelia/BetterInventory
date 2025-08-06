@@ -11,12 +11,11 @@ package Shared.AS3.COMPANIONAPP
    import scaleform.clik.events.ButtonEvent;
    import scaleform.clik.events.SliderEvent;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol446")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol449")]
    public class MobileQuantityMenu extends QuantityMenuNEW
    {
       
       public static const QUANTITY_CHANGED:* = "QuantityChanged";
-       
       
       public var sliderCLIK:Slider;
       
@@ -206,3 +205,4 @@ package Shared.AS3.COMPANIONAPP
       }
    }
 }
+

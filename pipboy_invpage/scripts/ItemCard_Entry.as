@@ -12,7 +12,6 @@ package
       public static var DynamicModDescEnable:Boolean = false;
       
       public static var AdvanceModDescMode:Boolean = false;
-       
       
       public var Label_tf:TextField;
       
@@ -52,6 +51,7 @@ package
          if(this.Label_tf != null)
          {
             GlobalFunc.SetText(this.Label_tf,param1,false);
+            TextFieldEx.setTextAutoSize(this.Label_tf,TextFieldEx.TEXTAUTOSZ_SHRINK);
          }
       }
       
@@ -168,7 +168,7 @@ package
          {
             _loc6_ *= param4;
          }
-         var _loc7_:uint = !!param2 ? param2 : 0;
+         var _loc7_:uint = param2 ? param2 : 0;
          _loc5_ = _loc6_.toFixed(_loc7_);
          if(_loc6_ > 0 && parseFloat(_loc5_) < 0.001)
          {
@@ -203,3 +203,4 @@ package
       }
    }
 }
+

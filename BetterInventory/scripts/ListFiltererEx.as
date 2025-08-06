@@ -122,7 +122,6 @@ package
          "此鱼饵数量不足。":"型鱼类",
          "該種魚餌數量不足。":"型魚類"
       };
-       
       
       public var infoMap:Dictionary;
       
@@ -130,11 +129,10 @@ package
       
       public var extraFilterType:int = -1;
       
-      public var ITEM_FILTER_MISC:uint;
+      public var ITEM_FILTER_MISC:uint = 1 << 12;
       
       public function ListFiltererEx(param1:Dictionary, param2:Dictionary)
       {
-         this.ITEM_FILTER_MISC = 1 << 12;
          super();
          this.infoMap = param1;
          this.paperDollMap = param2;
@@ -804,3 +802,4 @@ package
       }
    }
 }
+

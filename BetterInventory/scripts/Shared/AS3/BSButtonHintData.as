@@ -7,7 +7,6 @@ package Shared.AS3
    {
       
       public static const BUTTON_HINT_DATA_CHANGE:String = "ButtonHintDataChange";
-       
       
       private var _strButtonText:String;
       
@@ -330,3 +329,4 @@ package Shared.AS3
       }
    }
 }
+

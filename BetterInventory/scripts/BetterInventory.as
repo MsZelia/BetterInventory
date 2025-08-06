@@ -45,7 +45,6 @@ package
       private static const TAB_MIN_INDEX:int = TAB_NEW_INDEX;
       
       private static const TAB_MAX_INDEX:int = TAB_AMMO_INDEX;
-       
       
       public var debug_tf:TextField;
       
@@ -57,9 +56,9 @@ package
       
       private var _buttonHintsInitialized:Boolean = false;
       
-      private var itemInfoMap:Dictionary;
+      private var itemInfoMap:Dictionary = new Dictionary();
       
-      private var paperDollMap:Dictionary;
+      private var paperDollMap:Dictionary = new Dictionary();
       
       private var currentTab:int = -1;
       
@@ -67,7 +66,7 @@ package
       
       private var filterer:ListFiltererEx;
       
-      private var savedFilterMode:Array;
+      private var savedFilterMode:Array = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
       
       private var shiftKeyDown:Boolean = false;
       
@@ -75,7 +74,7 @@ package
       
       private var disableFilterChangeOnCtrl:Boolean = false;
       
-      private var _translator:TextField;
+      private var _translator:TextField = new TextField();
       
       private var _weightStr:String = "";
       
@@ -87,10 +86,6 @@ package
       
       public function BetterInventory()
       {
-         this.itemInfoMap = new Dictionary();
-         this.paperDollMap = new Dictionary();
-         this.savedFilterMode = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
-         this._translator = new TextField();
          super();
          trace("BetterInventory loaded");
          this.debug_tf.visible = false;
@@ -684,8 +679,8 @@ package
       {
          var _loc5_:int = 0;
          var _loc3_:String = param1.toFixed(param2);
-         var _loc4_:int;
-         if((_loc4_ = int(_loc3_.indexOf("."))) > -1)
+         var _loc4_:int = int(_loc3_.indexOf("."));
+         if(_loc4_ > -1)
          {
             _loc5_ = _loc3_.length - 1;
             while(_loc5_ >= _loc4_)
@@ -713,3 +708,4 @@ package
       }
    }
 }
+

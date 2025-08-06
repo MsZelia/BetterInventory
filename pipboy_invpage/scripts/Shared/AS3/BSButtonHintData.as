@@ -13,7 +13,6 @@ package Shared.AS3
       public static const BUTTON_HINT_DATA_CHANGE:String = "ButtonHintDataChange";
       
       public static const EVENT_CONTROL_MAP_DATA:String = "ControlMapData";
-       
       
       private var _strButtonText:String;
       
@@ -49,6 +48,8 @@ package Shared.AS3
       
       private var _secondaryButtonCallback:Function;
       
+      private var m_DisabledButtonCallback:Function;
+      
       private var m_CanHold:Boolean = false;
       
       private var m_HoldPercent:Number = 0;
@@ -65,6 +66,8 @@ package Shared.AS3
       
       public var onAnnounceDataChange:Function;
       
+      public var onTextClickDisabled:Function;
+      
       public var onTextClick:Function;
       
       public var onSecondaryButtonClick:Function;
@@ -72,6 +75,7 @@ package Shared.AS3
       public function BSButtonHintData(param1:String, param2:String, param3:String, param4:String, param5:uint, param6:Function, param7:String = "", param8:String = "")
       {
          this.onAnnounceDataChange = this.onAnnounceDataChange_Impl;
+         this.onTextClickDisabled = this.onTextClickDisabled_Impl;
          this.onTextClick = this.onTextClick_Impl;
          this.onSecondaryButtonClick = this.onSecondaryButtonClick_Impl;
          super();
@@ -91,6 +95,7 @@ package Shared.AS3
          this._strSecondaryPSNButton = "";
          this._strSecondaryXenonButton = "";
          this._secondaryButtonCallback = null;
+         this.m_DisabledButtonCallback = null;
          this._strDynamicMovieClipName = "";
          this._isWarning = false;
       }
@@ -414,6 +419,24 @@ package Shared.AS3
          this._secondaryButtonCallback = param1;
       }
       
+      public function get disabledButtonCallback() : Function
+      {
+         return this.m_DisabledButtonCallback;
+      }
+      
+      public function set disabledButtonCallback(param1:Function) : *
+      {
+         this.m_DisabledButtonCallback = param1;
+      }
+      
+      private function onTextClickDisabled_Impl() : void
+      {
+         if(this.m_DisabledButtonCallback is Function)
+         {
+            this.m_DisabledButtonCallback();
+         }
+      }
+      
       private function onTextClick_Impl() : void
       {
          if(this._callbackFunction is Function)
@@ -481,3 +504,4 @@ package Shared.AS3
       }
    }
 }
+

@@ -8,7 +8,7 @@ package
    import flash.events.MouseEvent;
    import flash.text.TextField;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol418")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol421")]
    public class FavoritesEntry extends BSUIComponent
    {
       
@@ -17,7 +17,6 @@ package
       public static const MOUSE_LEAVE:String = "FavoritesEntry::mouse_leave";
       
       public static const CLICK:String = "FavoritesEntry::mouse_click";
-       
       
       public var Icon_mc:MovieClip;
       
@@ -77,3 +76,4 @@ package
       }
    }
 }
+

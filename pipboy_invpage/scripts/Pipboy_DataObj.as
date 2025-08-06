@@ -8,7 +8,6 @@ package
       public static const NUM_PAGES:uint = 4;
       
       public static const NUM_SPECIAL:uint = 7;
-       
       
       private var _CurrentPage:uint;
       
@@ -29,6 +28,8 @@ package
       private var _SelectedSuffix:Number;
       
       private var _IsInPowerArmor:Boolean;
+      
+      private var _IsTransferLockingFeatureEnabled:Boolean;
       
       private var _StimpakCount:uint;
       
@@ -110,7 +111,7 @@ package
       
       private var _RLegCondition:Number;
       
-      public var ConditionBoyData:Object;
+      public var ConditionBoyData:Object = new Object();
       
       private var _SPECIALList:Array;
       
@@ -166,7 +167,6 @@ package
       
       public function Pipboy_DataObj()
       {
-         this.ConditionBoyData = new Object();
          super();
          this._CurrentPage = 0;
          this._StoredTabs = new Vector.<uint>(NUM_PAGES,true);
@@ -183,6 +183,7 @@ package
          this._SelectedPrefix = -1;
          this._SelectedSuffix = -1;
          this._IsInPowerArmor = false;
+         this._IsTransferLockingFeatureEnabled = false;
          this._StimpakCount = 0;
          this._RadawayCount = 0;
          this._CurrHP = 0;
@@ -300,6 +301,11 @@ package
       public function get IsInPowerArmor() : Boolean
       {
          return this._IsInPowerArmor;
+      }
+      
+      public function get IsTransferLockingFeatureEnabled() : Boolean
+      {
+         return this._IsTransferLockingFeatureEnabled;
       }
       
       public function get StimpakCount() : uint
@@ -658,6 +664,11 @@ package
          this._IsInPowerArmor = param1;
       }
       
+      public function set IsTransferLockingFeatureEnabled(param1:Boolean) : *
+      {
+         this._IsTransferLockingFeatureEnabled = param1;
+      }
+      
       public function set StimpakCount(param1:uint) : *
       {
          this._StimpakCount = param1;
@@ -904,3 +915,4 @@ package
       }
    }
 }
+

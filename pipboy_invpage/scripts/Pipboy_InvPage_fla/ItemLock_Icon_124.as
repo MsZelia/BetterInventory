@@ -2,11 +2,11 @@ package Pipboy_InvPage_fla
 {
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol290")]
-   public dynamic class SetBonusIcon_123 extends MovieClip
+   [Embed(source="/_assets/assets.swf", symbol="symbol293")]
+   public dynamic class ItemLock_Icon_124 extends MovieClip
    {
       
-      public function SetBonusIcon_123()
+      public function ItemLock_Icon_124()
       {
          super();
          addFrameScript(0,this.frame1,1,this.frame2);

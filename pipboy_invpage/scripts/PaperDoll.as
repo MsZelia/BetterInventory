@@ -3,10 +3,9 @@ package
    import Shared.AS3.BSUIComponent;
    import flash.display.MovieClip;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol490")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol493")]
    public class PaperDoll extends BSUIComponent
    {
-       
       
       public var Helmet_mc:MovieClip;
       
@@ -68,11 +67,10 @@ package
       
       private var _UnderwearType:uint;
       
-      private var _DisplayDamageTypes:Array;
+      private var _DisplayDamageTypes:Array = new Array(1,4,6);
       
       public function PaperDoll()
       {
-         this._DisplayDamageTypes = new Array(1,4,6);
          super();
          addFrameScript(0,this.frame1);
          this._SelectedInfoObj = new Array();
@@ -245,3 +243,4 @@ package
       }
    }
 }
+

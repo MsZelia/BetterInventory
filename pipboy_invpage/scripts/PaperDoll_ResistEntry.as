@@ -7,10 +7,9 @@ package
    import scaleform.gfx.Extensions;
    import scaleform.gfx.TextFieldEx;
    
-   [Embed(source="/_assets/assets.swf", symbol="symbol459")]
+   [Embed(source="/_assets/assets.swf", symbol="symbol462")]
    public class PaperDoll_ResistEntry extends BSUIComponent
    {
-       
       
       public var Icon_mc:MovieClip;
       
@@ -42,3 +41,4 @@ package
       }
    }
 }
+

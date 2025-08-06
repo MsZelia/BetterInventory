@@ -34,7 +34,6 @@ package
       public static const RadioTab:PipboyUpdateMask = new PipboyUpdateMask(1 << 13);
       
       public static const All:PipboyUpdateMask = new PipboyUpdateMask(4294967295);
-       
       
       private var _Mask:uint;
       
@@ -55,3 +54,4 @@ package
       }
    }
 }
+
