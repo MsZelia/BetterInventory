@@ -1067,6 +1067,37 @@ package Shared
          };
       }
       
+      public static function TraceFunction(param1:Boolean = false, ... rest) : *
+      {
+         var _loc5_:Array = null;
+         var _loc6_:* = null;
+         var _loc7_:* = undefined;
+         var _loc8_:String = null;
+         var _loc3_:String = new Error().getStackTrace();
+         var _loc4_:Array = _loc3_.split("\n");
+         if(_loc4_.length >= 2)
+         {
+            _loc5_ = _loc4_[2].split(" ")[1].split("()");
+            _loc6_ = "";
+            _loc7_ = 0;
+            while(_loc7_ < rest.length)
+            {
+               _loc6_ += rest[_loc7_];
+               if(_loc7_ < rest.length - 1)
+               {
+                  _loc6_ += ", ";
+               }
+               _loc7_++;
+            }
+            _loc8_ = "";
+            if(param1 && _loc4_.length > 2)
+            {
+               _loc8_ = "\n" + _loc4_.slice(3).join("\n");
+            }
+            trace(new Array("[FUNCTION TRACE] ",_loc5_[0],"(",_loc6_,")",_loc8_).join(""));
+         }
+      }
+      
       public static function InspectObject(param1:Object, param2:Boolean = false, param3:Boolean = false) : void
       {
          var _loc4_:String = getQualifiedClassName(param1);

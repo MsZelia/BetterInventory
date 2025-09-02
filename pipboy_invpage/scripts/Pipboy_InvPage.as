@@ -26,10 +26,6 @@ package
    public class Pipboy_InvPage extends PipboyPage
    {
       
-      public static var ShowDurability:Boolean = false;
-      
-      public static var CheckItemProtectionOnSelectionChange:Boolean = false;
-      
       private static var m_IsTransferLockingFeatureEnabled:Boolean = false;
       
       public static const EVENT_LOCK_ITEM:String = "Container::TransferLockToggle";
@@ -166,10 +162,16 @@ package
          {
             this.previousSelectedNodeId = uint.MAX_VALUE;
          }
-         this.__betterInventoryLoader = new Loader();
-         trace("InvPage loaded");
-         addChild(this.__betterInventoryLoader);
-         this.__betterInventoryLoader.load(new URLRequest("BetterInventory.swf"),new LoaderContext(false,ApplicationDomain.currentDomain));
+         try
+         {
+            this.__betterInventoryLoader = new Loader();
+            trace("InvPage loaded");
+            addChild(this.__betterInventoryLoader);
+            this.__betterInventoryLoader.load(new URLRequest("BetterInventory.swf"),new LoaderContext(false,ApplicationDomain.currentDomain));
+         }
+         catch(e:*)
+         {
+         }
       }
       
       public static function get IsTransferLockingFeatureEnabled() : Boolean
