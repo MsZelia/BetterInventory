@@ -1,6 +1,7 @@
 package
 {
    import Shared.AS3.BSButtonHintData;
+   import Shared.AS3.Data.BSUIDataManager;
    import Shared.AS3.Events.PlatformChangeEvent;
    import Shared.AS3.ListFilterer;
    import flash.display.MovieClip;
@@ -84,6 +85,10 @@ package
       
       private var invPage:MovieClip = null;
       
+      private var HUDRightMetersData:* = null;
+      
+      private var isGhoul:Boolean = false;
+      
       public function BetterInventory()
       {
          super();
@@ -91,6 +96,7 @@ package
          this.debug_tf.visible = false;
          this.filterButton = new BSButtonHintData("$FILTER","Ctrl","PSN_L1","Xenon_L1",1,this.onFilterButtonPress);
          addEventListener(Event.ADDED_TO_STAGE,this.addedToStageHandler);
+         this.HUDRightMetersData = BSUIDataManager.GetDataFromClient("HUDRightMetersData").data;
       }
       
       private function init() : void
@@ -128,6 +134,7 @@ package
             this.postInventoryUpdate(this.pipboyMenu.DataObj);
             this.SetIsDirty();
          }
+         this.isGhoul = this.HUDRightMetersData.feralPercent != -1;
       }
       
       private function onLowerPipboyAllowedChange(param1:Event) : void
@@ -258,14 +265,17 @@ package
          {
             if(this.pipboyMenu.DataObj.CurrentPage == INV_PAGE_INDEX)
             {
-               if(this.pipboyMenu.DataObj.CurrentTab != TAB_FOOD_DRINK_INDEX)
+               if(!this.isGhoul)
                {
-                  this.savedFilterMode[TAB_FOOD_DRINK_INDEX] = ListFiltererEx.FILTER_FW_FOOD_COOKED;
-                  this.pipboyMenu.TryToSetTab(TAB_FOOD_DRINK_INDEX);
-               }
-               else if(this.filterer.extraFilterType != ListFiltererEx.FILTER_FW_FOOD_COOKED)
-               {
-                  this.applyFilter(ListFiltererEx.FILTER_FW_FOOD_COOKED);
+                  if(this.pipboyMenu.DataObj.CurrentTab != TAB_FOOD_DRINK_INDEX)
+                  {
+                     this.savedFilterMode[TAB_FOOD_DRINK_INDEX] = ListFiltererEx.FILTER_FW_FOOD_COOKED;
+                     this.pipboyMenu.TryToSetTab(TAB_FOOD_DRINK_INDEX);
+                  }
+                  else if(this.filterer.extraFilterType != ListFiltererEx.FILTER_FW_FOOD_COOKED)
+                  {
+                     this.applyFilter(ListFiltererEx.FILTER_FW_FOOD_COOKED);
+                  }
                }
             }
             else if(this.pipboyMenu.DataObj.CurrentPage == STATS_PAGE_INDEX)
@@ -493,6 +503,10 @@ package
          else if(_loc2_ > _loc3_[1])
          {
             _loc2_ = -1;
+         }
+         if(isGhoul && _loc2_ >= ListFiltererEx.FILTER_FW_FOOD && _loc2_ <= ListFiltererEx.FILTER_FW_WATER_COOKED)
+         {
+            _loc2_ = param1 > 0 ? int(ListFiltererEx.FILTER_FW_WATER_COOKED + 1) : -1;
          }
          this.applyFilter(_loc2_);
       }
