@@ -21,7 +21,7 @@ package
       
       private static const MOD_VERSION:String = "1.1.0";
       
-      private static const DEBUG_MODE:Boolean = true;
+      private static const DEBUG_MODE:Boolean = false;
       
       private static const TAB_NEW_INDEX:int = 1;
       
@@ -36,8 +36,6 @@ package
       public var debug_tf:TextField;
       
       private var pipboyMenu:MovieClip;
-      
-      private var _bIsDirty:Boolean;
       
       private var itemInfoMap:Dictionary = new Dictionary();
       
@@ -54,8 +52,6 @@ package
       private var ctrlKeyDown:Boolean = false;
       
       private var invPage:MovieClip = null;
-      
-      private var HUDRightMetersData:* = null;
       
       private var PlayerInventoryData:* = null;
       
@@ -141,17 +137,11 @@ package
             stage.getChildAt(0)["BetterInventory"] = this;
             errorCode = "PlayerInventoryData";
             this.PlayerInventoryData = BSUIDataManager.GetDataFromClient("PlayerInventoryData");
-            errorCode = "eventListeners";
-            this.PlayerInventoryData.addEventListener(Event.CHANGE,this.preInventoryChangeEvent,false,int.MAX_VALUE);
-            this.PlayerInventoryData.addEventListener(Event.CHANGE,this.postInventoryChangeEvent,false,1);
             errorCode = "keyHandlers";
             stage.addEventListener(KeyboardEvent.KEY_DOWN,this.keyDownHandler);
             stage.addEventListener(KeyboardEvent.KEY_UP,this.keyUpHandler);
             errorCode = "PipBoyINVProvider";
             BSUIDataManager.Subscribe("PipBoyINVProvider",this.onPipBoyINVUpdate);
-            errorCode = "isGhoul";
-            this.HUDRightMetersData = BSUIDataManager.GetDataFromClient("HUDRightMetersData").data;
-            this.isGhoul = this.HUDRightMetersData.feralPercent != -1;
             errorCode = "localization";
             this.log("BetterInventory initialized");
          }
@@ -268,32 +258,6 @@ package
          else if(param1.keyCode == Keyboard.CONTROL)
          {
             this.ctrlKeyDown = false;
-         }
-      }
-      
-      private function preInventoryChangeEvent() : void
-      {
-         if(true)
-         {
-            return;
-         }
-         this.log("preInventoryChangeEvent");
-         if(this.isINVTabVisible)
-         {
-            this.preInventoryUpdate();
-         }
-      }
-      
-      private function postInventoryChangeEvent() : void
-      {
-         if(true)
-         {
-            return;
-         }
-         this.log("postInventoryChangeEvent");
-         if(this.isINVTabVisible)
-         {
-            this.postInventoryUpdate();
          }
       }
       
