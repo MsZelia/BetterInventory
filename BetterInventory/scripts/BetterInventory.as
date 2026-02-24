@@ -294,10 +294,14 @@ package
                      "weight":item.weight,
                      "count":item.count
                   };
-                  if(false)
-                  {
-                     CloneObject(item);
-                  }
+                  count++;
+               }
+               else if(this.itemInfoMap[itemName].count != item.count)
+               {
+                  this.itemInfoMap[itemName] = {
+                     "weight":item.weight,
+                     "count":item.count
+                  };
                   count++;
                }
             }
