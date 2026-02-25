@@ -9,7 +9,6 @@ package
    import flash.events.KeyboardEvent;
    import flash.events.TimerEvent;
    import flash.text.TextField;
-   import flash.text.TextFormat;
    import flash.ui.Keyboard;
    import flash.utils.ByteArray;
    import flash.utils.Dictionary;
@@ -57,7 +56,7 @@ package
       
       private var isGhoul:Boolean = false;
       
-      private var visibilityTimer:Timer = new Timer(33);
+      private var visibilityTimer:Timer = new Timer(20);
       
       private var isINVTabVisible:Boolean = false;
       
@@ -72,27 +71,7 @@ package
          super();
          trace("BetterInventory loaded");
          addEventListener(Event.ADDED_TO_STAGE,this.addedToStageHandler);
-         this.initDebug();
-      }
-      
-      private function initDebug() : void
-      {
-         debug_tf = new TextField();
-         debug_tf.x = 0;
-         debug_tf.y = 0;
-         debug_tf.width = 800;
-         debug_tf.height = 600;
-         debug_tf.text = "";
-         debug_tf.wordWrap = true;
-         debug_tf.multiline = true;
-         var font:TextFormat = new TextFormat("$MAIN_Font",18,16777215);
-         debug_tf.defaultTextFormat = font;
-         debug_tf.setTextFormat(font);
-         debug_tf.selectable = false;
-         debug_tf.mouseWheelEnabled = false;
-         debug_tf.mouseEnabled = false;
-         debug_tf.visible = DEBUG_MODE;
-         addChild(debug_tf);
+         this.debug_tf.visible = DEBUG_MODE;
       }
       
       public function displayMessage(param1:*) : void
@@ -371,6 +350,10 @@ package
          var bracketIndex:String;
          try
          {
+            if(!this.isINVTabVisible)
+            {
+               return;
+            }
             weightStr = this.pipboyMenu.BottomBar_mc.Info_mc.Weight_tf.text;
             if((bracketIndex = weightStr.indexOf(" [")) != -1)
             {
