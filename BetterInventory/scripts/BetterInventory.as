@@ -3,11 +3,14 @@ package
    import Shared.AS3.Data.*;
    import Shared.AS3.Events.*;
    import Shared.AS3.ListFilterer;
+   import com.adobe.serialization.json.*;
    import flash.display.MovieClip;
    import flash.display.Sprite;
    import flash.events.Event;
    import flash.events.KeyboardEvent;
    import flash.events.TimerEvent;
+   import flash.net.URLLoader;
+   import flash.net.URLRequest;
    import flash.text.TextField;
    import flash.ui.Keyboard;
    import flash.utils.ByteArray;
@@ -20,8 +23,6 @@ package
       
       private static const MOD_VERSION:String = "1.1.0";
       
-      private static const DEBUG_MODE:Boolean = false;
-      
       private static const TAB_NEW_INDEX:int = 1;
       
       private static const TAB_MIN_INDEX:int = 1;
@@ -32,6 +33,8 @@ package
       
       private static const TAB_SET:String = "NewPipBoyMenu::TabSet";
       
+      private static var DEBUG_MODE:Boolean = false;
+      
       public var debug_tf:TextField;
       
       private var pipboyMenu:MovieClip;
@@ -39,8 +42,6 @@ package
       private var itemInfoMap:Dictionary = new Dictionary();
       
       private var currentTabWeight:String = "0";
-      
-      private var filterer:ListFilterer;
       
       private var filters:Array = [2,4,8,16,32,64,532480,131072,3072,540672,32768,65536,-1,-1,-1];
       
@@ -65,6 +66,8 @@ package
       private var lastItemFilter:int = -1;
       
       private var knownLocalized:String = "$$Known ";
+      
+      public var config:Object = null;
       
       public function BetterInventory()
       {
@@ -121,7 +124,10 @@ package
             stage.addEventListener(KeyboardEvent.KEY_UP,this.keyUpHandler);
             errorCode = "PipBoyINVProvider";
             BSUIDataManager.Subscribe("PipBoyINVProvider",this.onPipBoyINVUpdate);
-            errorCode = "localization";
+            errorCode = "enableScrollWrap";
+            this.invPage.List_mc.enableScrollWrap = true;
+            errorCode = "loadConfig";
+            this.loadConfig();
             this.log("BetterInventory initialized");
          }
          catch(e:*)
@@ -130,12 +136,42 @@ package
          }
       }
       
+      private function loadConfig() : void
+      {
+         var loaderComplete:*;
+         var url:URLRequest = null;
+         var loader:URLLoader = null;
+         try
+         {
+            loaderComplete = function(param1:Event):void
+            {
+               try
+               {
+                  config = new JSONDecoder(loader.data,true).getValue();
+                  DEBUG_MODE = config.debug;
+                  invPage.List_mc.enableScrollWrap = !config.disableScrollWrap;
+               }
+               catch(e:Error)
+               {
+                  log("Error parsing config file!",e);
+               }
+            };
+            url = new URLRequest("../BetterInventoryConfig.json");
+            loader = new URLLoader();
+            loader.load(url);
+            loader.addEventListener(Event.COMPLETE,loaderComplete,false,0,true);
+         }
+         catch(e:Error)
+         {
+            this.log("Error loading config:",e);
+         }
+      }
+      
       private function checkForVisibilityChange() : void
       {
          if(this.invPage.visible != this.isINVTabVisible)
          {
             this.isINVTabVisible = this.invPage.visible;
-            this.log("invPage visible:",this.isINVTabVisible);
             if(this.isINVTabVisible)
             {
                this.preInventoryUpdate();
@@ -162,11 +198,16 @@ package
             this.log("onPipBoyINVUpdate");
             this.preInventoryUpdate();
             this.postInventoryUpdate();
+            this.invPage.List_mc.enableScrollWrap = config == null || !config.disableScrollWrap;
          }
       }
       
       public function ProcessUserEvent(param1:String, param2:Boolean) : Boolean
       {
+         if(config != null && config.disableShiftHotkeys)
+         {
+            return false;
+         }
          if(this.shiftKeyDown && !param2)
          {
             switch(param1)
@@ -206,28 +247,31 @@ package
       
       private function keyUpHandler(param1:KeyboardEvent) : void
       {
-         var nextTabID:int = -1;
-         if(param1.keyCode >= Keyboard.NUMBER_1 && param1.keyCode <= Keyboard.NUMBER_9)
+         if(config == null || !config.disableNumericalHotkeys)
          {
-            nextTabID = param1.keyCode - Keyboard.NUMBER_0;
-         }
-         else if(param1.keyCode == Keyboard.NUMBER_0)
-         {
-            nextTabID = 10;
-         }
-         else if(param1.keyCode == Keyboard.MINUS)
-         {
-            nextTabID = 11;
-         }
-         else if(param1.keyCode == Keyboard.EQUAL)
-         {
-            nextTabID = 12;
-         }
-         if(nextTabID != -1)
-         {
-            if(!this.shiftKeyDown && !this.ctrlKeyDown)
+            var nextTabID:int = -1;
+            if(param1.keyCode >= Keyboard.NUMBER_1 && param1.keyCode <= Keyboard.NUMBER_9)
             {
-               this.TryToSetTab(nextTabID);
+               nextTabID = param1.keyCode - Keyboard.NUMBER_0;
+            }
+            else if(param1.keyCode == Keyboard.NUMBER_0)
+            {
+               nextTabID = 10;
+            }
+            else if(param1.keyCode == Keyboard.MINUS)
+            {
+               nextTabID = 11;
+            }
+            else if(param1.keyCode == Keyboard.EQUAL)
+            {
+               nextTabID = 12;
+            }
+            if(nextTabID != -1)
+            {
+               if(!this.shiftKeyDown && !this.ctrlKeyDown)
+               {
+                  this.TryToSetTab(nextTabID);
+               }
             }
          }
          if(param1.keyCode == Keyboard.SHIFT)
@@ -242,13 +286,11 @@ package
       
       private function preInventoryUpdate() : void
       {
-         this.log("preInventoryUpdate");
          this.populateItemInfoMap();
       }
       
       private function postInventoryUpdate() : void
       {
-         this.log("postInventoryUpdate");
          this.calcTabWeight();
       }
       
@@ -301,6 +343,10 @@ package
          var infoObj:* = undefined;
          try
          {
+            if(config != null && config.disableCategoryWeight)
+            {
+               return;
+            }
             tabWeight = 0;
             bailoutCounter = 5000;
             filterer = this.invPage.List_mc.filterer;
@@ -351,6 +397,10 @@ package
          try
          {
             if(!this.isINVTabVisible)
+            {
+               return;
+            }
+            if(config != null && config.disableCategoryWeight)
             {
                return;
             }
