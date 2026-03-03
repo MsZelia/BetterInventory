@@ -7,6 +7,7 @@ package
    import flash.display.MovieClip;
    import flash.display.Sprite;
    import flash.events.Event;
+   import flash.events.IOErrorEvent;
    import flash.events.KeyboardEvent;
    import flash.events.TimerEvent;
    import flash.net.URLLoader;
@@ -17,11 +18,12 @@ package
    import flash.utils.Dictionary;
    import flash.utils.Timer;
    import flash.utils.getQualifiedClassName;
+   import flash.utils.setTimeout;
    
    public class BetterInventory extends Sprite
    {
       
-      private static const MOD_VERSION:String = "1.1.0";
+      private static const MOD_VERSION:String = "2.0.0";
       
       private static const TAB_NEW_INDEX:int = 1;
       
@@ -127,8 +129,8 @@ package
             errorCode = "enableScrollWrap";
             this.invPage.List_mc.enableScrollWrap = true;
             errorCode = "loadConfig";
-            this.loadConfig();
-            this.log("BetterInventory initialized");
+            setTimeout(this.loadConfig,300);
+            this.log("BetterInventory initialized",MOD_VERSION);
          }
          catch(e:*)
          {
@@ -139,6 +141,7 @@ package
       private function loadConfig() : void
       {
          var loaderComplete:*;
+         var ioErrorHandler:*;
          var url:URLRequest = null;
          var loader:URLLoader = null;
          try
@@ -150,16 +153,22 @@ package
                   config = new JSONDecoder(loader.data,true).getValue();
                   DEBUG_MODE = config.debug;
                   invPage.List_mc.enableScrollWrap = !config.disableScrollWrap;
+                  log("Config file loaded!");
                }
                catch(e:Error)
                {
                   log("Error parsing config file!",e);
                }
             };
+            ioErrorHandler = function(param1:*):void
+            {
+               log("Error loading config!",param1.text);
+            };
             url = new URLRequest("../BetterInventoryConfig.json");
             loader = new URLLoader();
             loader.load(url);
             loader.addEventListener(Event.COMPLETE,loaderComplete,false,0,true);
+            loader.addEventListener(IOErrorEvent.IO_ERROR,ioErrorHandler,false,0,true);
          }
          catch(e:Error)
          {
@@ -200,6 +209,26 @@ package
             this.postInventoryUpdate();
             this.invPage.List_mc.enableScrollWrap = config == null || !config.disableScrollWrap;
          }
+      }
+      
+      private function onPipBoySelectionChange(param1:*) : void
+      {
+         if(!param1.data.ItemDetails || !param1.data.ItemDetails.InfoCardData)
+         {
+            return;
+         }
+         var wt:Number = 0;
+         var infoCardData:Array = param1.data.ItemDetails.InfoCardData;
+         var info:* = undefined;
+         for each(info in infoCardData)
+         {
+            if(info.text == "$wt")
+            {
+               wt = Number(info.value);
+               break;
+            }
+         }
+         this.log("selected wt:",wt);
       }
       
       public function ProcessUserEvent(param1:String, param2:Boolean) : Boolean
