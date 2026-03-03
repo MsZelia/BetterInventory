@@ -43,7 +43,7 @@ package
       
       private var currentTabWeight:String = "0";
       
-      private var filters:Array = [2,4,8,16,32,64,532480,131072,3072,540672,32768,65536,-1,-1,-1];
+      private var filters:Array = [2,4,8,16,32,64,12288,131072,3072,540672,32768,65536,-1,-1,-1];
       
       private var filterNames:Array = ["New","Weapons","Armor","Apparel","FW","Aid","Misc","Holo","Notes","Junk","Mods","Ammo"];
       
