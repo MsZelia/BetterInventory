@@ -23,7 +23,7 @@ package
    public class BetterInventory extends Sprite
    {
       
-      private static const MOD_VERSION:String = "2.0.0";
+      private static const MOD_VERSION:String = "2.0.1";
       
       private static const TAB_NEW_INDEX:int = 1;
       
@@ -45,7 +45,7 @@ package
       
       private var currentTabWeight:String = "0";
       
-      private var filters:Array = [2,4,8,16,32,64,12288,131072,3072,540672,32768,65536,-1,-1,-1];
+      private var filters:Array = [2,4,8,16,32,64,12288,131072,3072,278528,32768,65536,-1,-1,-1];
       
       private var filterNames:Array = ["New","Weapons","Armor","Apparel","FW","Aid","Misc","Holo","Notes","Junk","Mods","Ammo"];
       
@@ -126,8 +126,6 @@ package
             stage.addEventListener(KeyboardEvent.KEY_UP,this.keyUpHandler);
             errorCode = "PipBoyINVProvider";
             BSUIDataManager.Subscribe("PipBoyINVProvider",this.onPipBoyINVUpdate);
-            errorCode = "enableScrollWrap";
-            this.invPage.List_mc.enableScrollWrap = true;
             errorCode = "loadConfig";
             setTimeout(this.loadConfig,300);
             this.log("BetterInventory initialized",MOD_VERSION);
@@ -207,7 +205,6 @@ package
             this.log("onPipBoyINVUpdate");
             this.preInventoryUpdate();
             this.postInventoryUpdate();
-            this.invPage.List_mc.enableScrollWrap = config == null || !config.disableScrollWrap;
          }
       }
       

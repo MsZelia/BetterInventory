@@ -56,9 +56,11 @@ package
       public function NewPipboy_InvPage()
       {
          super();
+         this.List_mc.enableScrollWrap = true;
          this.List_mc.listEntryClass_Inspectable = "PipBoyInvListEntry";
          this.List_mc.numListItems_Inspectable = 9;
          this.List_mc.textOption_Inspectable = BSScrollingList.TEXT_OPTION_SHRINK_TO_FIT;
+         this.ComponentList_mc.enableScrollWrap = true;
          this.ComponentList_mc.listEntryClass_Inspectable = "ComponentListEntry";
          this.ComponentList_mc.numListItems_Inspectable = 9;
          this.ComponentList_mc.textOption_Inspectable = BSScrollingList.TEXT_OPTION_SHRINK_TO_FIT;
@@ -88,7 +90,7 @@ package
             this.List_mc.entryList = PageData.InventoryA;
             this.List_mc.InvalidateData();
          }
-         stage.focus = this.List_mc;
+         stage.focus = this.m_ShowingQuantity ? this.m_QuantityMenu : (this.m_ComponentViewMode ? this.ComponentList_mc : this.List_mc);
       }
       
       override public function processProvider(aData:Object, aType:uint = 0) : void
@@ -106,7 +108,7 @@ package
                this.m_InventoryList = aData.InventoryA;
                this.List_mc.entryList = this.m_InventoryList;
                this.List_mc.InvalidateData();
-               stage.focus = this.m_ComponentViewMode ? this.ComponentList_mc : this.List_mc;
+               stage.focus = this.m_ShowingQuantity ? this.m_QuantityMenu : (this.m_ComponentViewMode ? this.ComponentList_mc : this.List_mc);
                selectedIndex = Math.max(this.List_mc.selectedIndex,0);
                this.m_InventoryList.forEach(function(item:Object, index:int, array:Array):void
                {
@@ -318,7 +320,21 @@ package
             }
          }
          bhandled = false;
-         if(!abPressed)
+         var convertedString:String = null;
+         if(this.m_ShowingQuantity)
+         {
+            convertedString = strEventName;
+            if(strEventName == "MoveCamp")
+            {
+               convertedString = "LShoulder";
+            }
+            else if(strEventName == "ShowOnMap")
+            {
+               convertedString = "RShoulder";
+            }
+            bhandled = this.m_QuantityMenu.ProcessUserEvent(convertedString,abPressed);
+         }
+         if(!bhandled && !abPressed)
          {
             switch(strEventName)
             {
@@ -336,7 +352,12 @@ package
                case "Drop":
                   if(!this.m_ComponentViewMode && this.List_mc.selectedEntry && (this.m_CanDestroyCurrentItem || this.m_CanDropCurrentItem))
                   {
-                     if(this.List_mc.selectedEntry.Count > 1)
+                     if(this.List_mc.selectedEntry.IsTransferLocked)
+                     {
+                        GlobalFunc.ShowHUDMessage("$CannotDropLockedItem");
+                        GlobalFunc.PlayMenuSound(GlobalFunc.MENU_SOUND_CANCEL);
+                     }
+                     else if(this.List_mc.selectedEntry.Count > 1)
                      {
                         this.showQuantity(this.List_mc.selectedEntry.Count);
                      }
