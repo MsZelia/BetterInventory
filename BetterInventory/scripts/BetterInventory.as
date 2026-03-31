@@ -23,7 +23,7 @@ package
    public class BetterInventory extends Sprite
    {
       
-      private static const MOD_VERSION:String = "2.0.1";
+      private static const MOD_VERSION:String = "2.0.2";
       
       private static const TAB_NEW_INDEX:int = 1;
       
@@ -127,7 +127,7 @@ package
             errorCode = "PipBoyINVProvider";
             BSUIDataManager.Subscribe("PipBoyINVProvider",this.onPipBoyINVUpdate);
             errorCode = "loadConfig";
-            setTimeout(this.loadConfig,300);
+            setTimeout(this.loadConfig,25);
             this.log("BetterInventory initialized",MOD_VERSION);
          }
          catch(e:*)
@@ -330,30 +330,26 @@ package
          this.log("itemInfoMap source:",inv.length);
          var filter:int = int(this.isINVTabVisible ? filters[this.invPage.CurrentTabIndex - 1] : 0);
          var isNewTab:Boolean = this.invPage.CurrentTabIndex == TAB_NEW_INDEX;
+         var newItemMap:Dictionary = new Dictionary();
          while(i < inv.length)
          {
-            if(Boolean((item = inv[i]).filterFlag & filter) || isNewTab && item.isNew)
+            if(Boolean((item = inv[i]).filterFlag & filter))
             {
                var itemName:String = item.isLearnedRecipe ? this.knownLocalized + item.text : item.text;
-               if(this.itemInfoMap[itemName] == null)
+               if(newItemMap[itemName] == null)
                {
-                  this.itemInfoMap[itemName] = {
-                     "weight":item.weight,
-                     "count":item.count
-                  };
+                  newItemMap[itemName] = {"weight":item.weight * item.count};
                   count++;
                }
-               else if(this.itemInfoMap[itemName].count != item.count)
+               else
                {
-                  this.itemInfoMap[itemName] = {
-                     "weight":item.weight,
-                     "count":item.count
-                  };
+                  newItemMap[itemName].weight += item.weight * item.count;
                   count++;
                }
             }
             i++;
          }
+         this.itemInfoMap = newItemMap;
          this.log("Populate itemInfoMap finished, entries added:",count);
       }
       
@@ -367,6 +363,7 @@ package
          var idx:int = 0;
          var entry:Object = null;
          var infoObj:* = undefined;
+         var uniqueEntries:* = {};
          try
          {
             if(config != null && config.disableCategoryWeight)
@@ -384,9 +381,10 @@ package
                infoObj = this.itemInfoMap[entry.Name];
                if(infoObj != null)
                {
-                  if(infoObj.weight)
+                  if(!uniqueEntries[entry.Name] && infoObj.weight)
                   {
-                     tabWeight += infoObj.weight * infoObj.count;
+                     tabWeight += infoObj.weight;
+                     uniqueEntries[entry.Name] = true;
                   }
                   count++;
                }
