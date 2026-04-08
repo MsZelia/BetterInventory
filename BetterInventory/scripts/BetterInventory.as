@@ -2,7 +2,6 @@ package
 {
    import Shared.AS3.Data.*;
    import Shared.AS3.Events.*;
-   import Shared.AS3.ListFilterer;
    import com.adobe.serialization.json.*;
    import flash.display.MovieClip;
    import flash.display.Sprite;
@@ -15,7 +14,6 @@ package
    import flash.text.TextField;
    import flash.ui.Keyboard;
    import flash.utils.ByteArray;
-   import flash.utils.Dictionary;
    import flash.utils.Timer;
    import flash.utils.getQualifiedClassName;
    import flash.utils.setTimeout;
@@ -23,7 +21,7 @@ package
    public class BetterInventory extends Sprite
    {
       
-      private static const MOD_VERSION:String = "2.0.2";
+      private static const MOD_VERSION:String = "2.0.3";
       
       private static const TAB_NEW_INDEX:int = 1;
       
@@ -41,8 +39,6 @@ package
       
       private var pipboyMenu:MovieClip;
       
-      private var itemInfoMap:Dictionary = new Dictionary();
-      
       private var currentTabWeight:String = "0";
       
       private var filters:Array = [2,4,8,16,32,64,12288,131072,3072,278528,32768,65536,-1,-1,-1];
@@ -57,8 +53,6 @@ package
       
       private var PlayerInventoryData:* = null;
       
-      private var isGhoul:Boolean = false;
-      
       private var visibilityTimer:Timer = new Timer(20);
       
       private var isINVTabVisible:Boolean = false;
@@ -66,8 +60,6 @@ package
       private var lastTabID:int = -1;
       
       private var lastItemFilter:int = -1;
-      
-      private var knownLocalized:String = "$$Known ";
       
       public var config:Object = null;
       
@@ -181,8 +173,7 @@ package
             this.isINVTabVisible = this.invPage.visible;
             if(this.isINVTabVisible)
             {
-               this.preInventoryUpdate();
-               this.postInventoryUpdate();
+               this.calcTabWeight();
             }
          }
          if(this.isINVTabVisible)
@@ -191,8 +182,7 @@ package
             {
                this.log("tab change:",this.lastTabID,"->",this.invPage.CurrentTabIndex);
                this.lastTabID = this.invPage.CurrentTabIndex;
-               this.preInventoryUpdate();
-               this.postInventoryUpdate();
+               this.calcTabWeight();
             }
             this.redraw();
          }
@@ -203,8 +193,7 @@ package
          if(this.isINVTabVisible)
          {
             this.log("onPipBoyINVUpdate");
-            this.preInventoryUpdate();
-            this.postInventoryUpdate();
+            this.calcTabWeight();
          }
       }
       
@@ -310,107 +299,38 @@ package
          }
       }
       
-      private function preInventoryUpdate() : void
-      {
-         this.populateItemInfoMap();
-      }
-      
-      private function postInventoryUpdate() : void
-      {
-         this.calcTabWeight();
-      }
-      
-      private function populateItemInfoMap() : void
-      {
-         this.log("Populate itemInfoMap started",this.invPage.CurrentTabIndex,filters[this.invPage.CurrentTabIndex - 1]);
-         var item:Object = null;
-         var count:uint = 0;
-         var i:int = 0;
-         var inv:Array = PlayerInventoryData.data.InventoryList;
-         this.log("itemInfoMap source:",inv.length);
-         var filter:int = int(this.isINVTabVisible ? filters[this.invPage.CurrentTabIndex - 1] : 0);
-         var isNewTab:Boolean = this.invPage.CurrentTabIndex == TAB_NEW_INDEX;
-         var newItemMap:Dictionary = new Dictionary();
-         while(i < inv.length)
-         {
-            if(Boolean((item = inv[i]).filterFlag & filter))
-            {
-               var itemName:String = item.isLearnedRecipe ? this.knownLocalized + item.text : item.text;
-               if(newItemMap[itemName] == null)
-               {
-                  newItemMap[itemName] = {"weight":item.weight * item.count};
-                  count++;
-               }
-               else
-               {
-                  newItemMap[itemName].weight += item.weight * item.count;
-                  count++;
-               }
-            }
-            i++;
-         }
-         this.itemInfoMap = newItemMap;
-         this.log("Populate itemInfoMap finished, entries added:",count);
-      }
-      
       private function calcTabWeight() : void
       {
-         var count:int;
-         var records:String;
-         var filterer:ListFilterer;
-         var tabWeight:Number = NaN;
-         var bailoutCounter:int = 0;
-         var idx:int = 0;
-         var entry:Object = null;
-         var infoObj:* = undefined;
-         var uniqueEntries:* = {};
+         var item:Object;
+         var count:uint;
+         var i:int;
+         var inv:Array;
+         var filter:int;
+         var tabWeight:Number;
          try
          {
-            if(config != null && config.disableCategoryWeight)
-            {
-               return;
-            }
-            tabWeight = 0;
-            bailoutCounter = 5000;
-            filterer = this.invPage.List_mc.filterer;
-            idx = filterer.GetNextFilterMatch(-1);
+            this.log("calcTabWeight started",this.invPage.CurrentTabIndex,filters[this.invPage.CurrentTabIndex - 1]);
+            item = null;
             count = 0;
-            while(idx != int.MAX_VALUE && Boolean(bailoutCounter--))
+            i = 0;
+            inv = PlayerInventoryData.data.InventoryList;
+            filter = int(this.isINVTabVisible ? filters[this.invPage.CurrentTabIndex - 1] : 0);
+            tabWeight = 0;
+            while(i < inv.length)
             {
-               entry = this.invPage.List_mc.entryList[idx];
-               infoObj = this.itemInfoMap[entry.Name];
-               if(infoObj != null)
+               if(Boolean((item = inv[i]).filterFlag & filter))
                {
-                  if(!uniqueEntries[entry.Name] && infoObj.weight)
-                  {
-                     tabWeight += infoObj.weight;
-                     uniqueEntries[entry.Name] = true;
-                  }
+                  tabWeight += item.weight * item.count;
                   count++;
                }
-               else if(false)
-               {
-                  log("infoObj NF: " + entry);
-                  records = "";
-                  for(record in entry)
-                  {
-                     records += record + ":" + entry[record] + ", ";
-                  }
-                  log(records,"\n");
-               }
-               idx = filterer.GetNextFilterMatch(idx);
-            }
-            if(bailoutCounter <= 0)
-            {
-               this.log("WARNING: We bailed out of calculating tab weight.");
+               i++;
             }
             this.currentTabWeight = int(tabWeight) == tabWeight ? tabWeight.toFixed(0) : tabWeight.toFixed(1);
-            this.log("calcTabWeight (" + count + "): " + this.currentTabWeight);
+            this.log("currentTabWeight (" + count + "):",this.currentTabWeight);
          }
-         catch(e:Error)
+         catch(e:*)
          {
-            this.log("Calculating tab weight FAILED");
-            this.log(e.errorID + " " + e.name + " " + e.message);
+            this.log("calcTabWeight error:",e);
          }
       }
       
