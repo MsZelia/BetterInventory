@@ -21,7 +21,7 @@ package
    public class BetterInventory extends Sprite
    {
       
-      private static const MOD_VERSION:String = "2.0.3";
+      private static const MOD_VERSION:String = "2.0.4";
       
       private static const TAB_NEW_INDEX:int = 1;
       
