@@ -322,8 +322,16 @@ package
       
       override public function ProcessUserEvent(strEventName:String) : Boolean
       {
+         var bhandled:* = this.__betterInventoryLoader.content;
+         if(bhandled)
+         {
+            if(bhandled.ProcessUserEvent(strEventName,false))
+            {
+               return true;
+            }
+         }
+         bhandled = false;
          var convertedString:String = null;
-         var bhandled:Boolean = false;
          if(this.m_ShowingQuantity)
          {
             convertedString = strEventName;
